@@ -18,7 +18,6 @@ El objetivo es facilitar la clasificación automática de pacientes en grupos di
 
 ```bash
 
-Copiar código
 git clone https://github.com/LuEnciso21/grd-baseline-predictor.git
 
 ```
@@ -66,5 +65,7 @@ Puede hacer la predicción de un sujeto a partir de un diccionario con los datos
 ## Contacto
 
 Luisa Enciso
+
 Maria Ostos
+
 Santiago Rivera
