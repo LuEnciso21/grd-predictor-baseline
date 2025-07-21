@@ -3,123 +3,805 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Predicción de GRD</title>
+    <title>Sistema de Predicción GRD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #f8f9fa; }
-        .container { max-width: 1200px; margin-top: 40px; }
-        .card { box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
-        .btn-primary { width: 100%; }
-        .table { font-size: 0.85rem; }
-        .table th, .table td { padding: 0.5rem; }
-        .probabilidad-item { 
-            background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
-            border-left: 4px solid #2196f3;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Header Section */
+        .header-section {
+            background: linear-gradient(90deg, #4a90e2 0%, #357abd 50%, #2c5aa0 100%);
+            padding: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .header-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        /* Separator Line */
+        .separator-line {
+            height: 3px;
+            background: linear-gradient(90deg, #4a90e2 0%, #5cb85c 50%, #4a90e2 100%);
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.4);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 3rem 0;
+            min-height: 60vh;
+        }
+
+        .prediction-card {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #4a90e2 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 2px solid rgba(74, 144, 226, 0.3);
+            position: relative;
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+
+        .prediction-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+
+        .prediction-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            pointer-events: none;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            padding: 0.75rem 1rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #4a90e2;
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+            color: white;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-predict {
+            background: linear-gradient(45deg, #4a90e2 0%, #5cb85c 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 16px rgba(74, 144, 226, 0.3);
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-predict::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-predict:hover::before {
+            left: 100%;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(74, 144, 226, 0.4);
+            color: white;
+        }
+
+        .btn-predict:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+        }
+
+        /* Loading animation for predict button */
+        .btn-predict.loading {
+            background: linear-gradient(45deg, #34495e 0%, #2c3e50 100%);
+            pointer-events: none;
+        }
+
+        .btn-predict.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid #4a90e2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Prediction animation */
+        .prediction-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .prediction-animation.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .prediction-content {
+            text-align: center;
+            color: white;
+        }
+
+        .prediction-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(74, 144, 226, 0.3);
+            border-top: 4px solid #4a90e2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .prediction-text {
+            font-size: 1.2rem;
+            font-weight: 500;
             margin-bottom: 10px;
-            padding: 15px;
+        }
+
+        .prediction-subtext {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Results Styling */
+        .result-section {
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #4a90e2;
+        }
+
+        .probability-item {
+            background: linear-gradient(90deg, rgba(74, 144, 226, 0.1) 0%, rgba(92, 184, 92, 0.1) 100%);
+            border-left: 4px solid #4a90e2;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .probability-item:hover {
+            transform: translateX(3px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.2);
+        }
+
+        .probability-main {
+            background: linear-gradient(90deg, rgba(92, 184, 92, 0.2) 0%, rgba(74, 144, 226, 0.2) 100%);
+            border-left-color: #5cb85c;
+        }
+
+        .probability-badge {
+            background: linear-gradient(45deg, #4a90e2 0%, #5cb85c 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 3px 10px rgba(74, 144, 226, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .probability-badge:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        /* Alert Styling */
+        .alert-custom {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-success-custom {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        /* Table Styling */
+        .table-custom {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .table-custom th {
+            background: rgba(0, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 1rem;
+        }
+
+        .table-custom td {
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 2px solid rgba(74, 144, 226, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-content {
+            text-align: center;
+        }
+
+        .footer-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #4a90e2;
+        }
+
+        .footer-names {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .name-item {
+            background: linear-gradient(45deg, rgba(74, 144, 226, 0.1) 0%, rgba(92, 184, 92, 0.1) 100%);
+            border: 1px solid rgba(74, 144, 226, 0.3);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            color: #4a90e2;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .name-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(74, 144, 226, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .name-item:hover::before {
+            left: 100%;
+        }
+
+        .name-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+            border-color: #4a90e2;
+        }
+
+        .footer-subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-icon {
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+
+        .footer-separator {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+            margin: 1rem 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 2rem;
+            }
+            
+            .card-title {
+                font-size: 2rem;
+            }
+            
+            .prediction-card {
+                margin: 0 1rem;
+                padding: 1.5rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1A1E2B;
             border-radius: 5px;
         }
-        .probabilidad-principal {
-            background: linear-gradient(90deg, #c8e6c9 0%, #a5d6a7 100%);
-            border-left: 4px solid #4caf50;
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #4a90e2 0%, #5cb85c 100%);
+            border-radius: 5px;
+            border: 1px solid rgba(74, 144, 226, 0.3);
         }
-        pre {
-            background: #f1f1f1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            overflow-x: auto;
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #5cb85c 0%, #4a90e2 100%);
+            box-shadow: 0 0 8px rgba(74, 144, 226, 0.4);
+        }
+
+        /* Floating particles effect */
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: linear-gradient(45deg, #4a90e2, #5cb85c);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.4;
+            }
+            50% {
+                transform: translateY(-15px) rotate(180deg);
+                opacity: 0.8;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <!-- Formulario de Predicción -->
-    <div class="card">
-        <div class="card-body">
-            <h2 class="card-title text-center mb-4">Predicción de GRD</h2>
-
-            <!-- Advertencias -->
-            {% if advertencias %}
-                <div class="alert alert-warning">
-                    <h5>Advertencias:</h5>
-                    <ul>
-                        {% for mensaje in advertencias %}
-                            <li>{{ mensaje }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-
-            <!-- Formulario -->
-            <form method="post" novalidate>
-                {% csrf_token %}
-                <div class="row">
-                    {% for field in form %}
-                        <div class="mb-3 col-md-4">
-                            <label for="id_{{ field.name }}" class="form-label">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.errors %}
-                                <div class="text-danger small">{{ field.errors|striptags }}</div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-                <button type="submit" class="btn btn-primary mt-2">Predecir</button>
-            </form>
-
-            <!-- Resultado principal -->
-            {% if resultado %}
-                <div class="alert alert-success mt-4 text-center">
-                    <h4 class="mb-0">GRD Predicho: <span class="fw-bold">{{ resultado }}</span></h4>
-                </div>
-            {% endif %}
-
-            <!-- Top 3 Probabilidades -->
-            {% if probabilidades %}
-                <div class="mt-4">
-                    <h5 class="text-center mb-3">Top 3 GRDs con Mayor Probabilidad:</h5>
-                    {% for grd, prob in probabilidades %}
-                        <div class="probabilidad-item {% if forloop.first %}probabilidad-principal{% endif %}">
-                            <div class="row align-items-center">
-                                <div class="col-md-6">
-                                    <h6 class="mb-0">
-                                        {% if forloop.first %}<i class="fas fa-trophy text-warning"></i>{% endif %}
-                                        GRD: <span class="fw-bold">{{ grd }}</span>
-                                    </h6>
-                                </div>
-                                <div class="col-md-6 text-end">
-                                    <span class="badge bg-primary fs-6">
-                                        {{ prob|floatformat:1 }}%
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-
-            <!-- Datos procesados -->
-            {% if df_html %}
-                <div class="mt-5">
-                    <h5 class="mb-2">🧠 Datos procesados enviados al modelo:</h5>
-                    {{ df_html|safe }}
-                </div>
-            {% endif %}
-
-            <!-- Datos originales -->
-            {% if df_original_html %}
-                <div class="mt-4">
-                    <h5 class="mb-2">📝 Datos originales recibidos del formulario:</h5>
-                    {{ df_original_html|safe }}
-                </div>
-            {% endif %}
+    <!-- Prediction Animation Overlay -->
+    <div class="prediction-animation" id="predictionAnimation">
+        <div class="prediction-content">
+            <div class="prediction-spinner"></div>
+            <div class="prediction-text">Analizando datos del paciente...</div>
+            <div class="prediction-subtext">Procesando información médica</div>
         </div>
     </div>
-</div>
 
-<!-- Bootstrap JS (opcional para interacción) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Font Awesome para íconos (opcional) -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- Floating Particles Background -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="container">
+            <div class="header-content">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <i class="fas fa-brain header-icon"></i>
+                    <h1 class="header-title mb-0">Sistema de Predicción GRD</h1>
+                </div>
+                <p class="header-subtitle">Análisis Inteligente de Grupos Relacionados de Diagnóstico</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Separator Line -->
+    <div class="separator-line"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="prediction-card fade-in-up">
+                <div class="card-content">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <i class="fas fa-chart-line card-icon"></i>
+                        <h2 class="card-title mb-0">Predicción de GRD</h2>
+                    </div>
+                    <p class="card-subtitle">Ingrese los datos del paciente para obtener la predicción</p>
+
+                    <!-- Advertencias -->
+                    {% if advertencias %}
+                        <div class="alert-custom">
+                            <h5><i class="fas fa-exclamation-triangle"></i> Advertencias:</h5>
+                            <ul class="mb-0">
+                                {% for mensaje in advertencias %}
+                                    <li>{{ mensaje }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <!-- Formulario -->
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <div class="row">
+                            {% for field in form %}
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="id_{{ field.name }}" class="form-label">
+                                            <i class="fas fa-user-md me-2"></i>{{ field.label }}
+                                        </label>
+                                        {{ field }}
+                                        {% if field.errors %}
+                                            <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-predict" id="predictBtn">
+                            <i class="fas fa-magic me-2"></i>Predecir GRD
+                        </button>
+                    </form>
+
+                    <!-- Resultado principal -->
+                    {% if resultado %}
+                        <div class="result-section">
+                            <div class="result-card alert-success-custom text-center">
+                                <h4 class="result-title mb-0">
+                                    <i class="fas fa-trophy me-2"></i>
+                                    GRD Predicho: <span class="fw-bold">{{ resultado }}</span>
+                                </h4>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Top 3 Probabilidades -->
+                    {% if probabilidades %}
+                        <div class="result-section">
+                            <h5 class="text-center mb-3">
+                                <i class="fas fa-medal me-2"></i>
+                                Top 3 GRDs con Mayor Probabilidad:
+                            </h5>
+                            {% for grd, prob in probabilidades %}
+                                <div class="probability-item {% if forloop.first %}probability-main{% endif %}">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <h6 class="mb-0">
+                                                {% if forloop.first %}
+                                                    <i class="fas fa-crown text-warning me-2"></i>
+                                                {% else %}
+                                                    <i class="fas fa-medal text-info me-2"></i>
+                                                {% endif %}
+                                                GRD: <span class="fw-bold">{{ grd }}</span>
+                                            </h6>
+                                        </div>
+                                        <div class="col-md-6 text-end">
+                                            <span class="probability-badge">
+                                                {{ prob|floatformat:1 }}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Datos procesados -->
+                    {% if df_html %}
+                        <div class="result-section">
+                            <h5 class="mb-3">
+                                <i class="fas fa-brain me-2"></i>
+                                Datos procesados enviados al modelo:
+                            </h5>
+                            <div class="table-responsive">
+                                {{ df_html|safe }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Datos originales -->
+                    {% if df_original_html %}
+                        <div class="result-section">
+                            <h5 class="mb-3">
+                                <i class="fas fa-clipboard-list me-2"></i>
+                                Datos originales recibidos del formulario:
+                            </h5>
+                            <div class="table-responsive">
+                                {{ df_original_html|safe }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="fas fa-university footer-icon"></i>
+                            <h6 class="footer-title mb-0">Sistema de Predicción de Grupos Relacionados de Diagnóstico (GRD)</h6>
+                        </div>
+                        <div class="footer-separator"></div>
+                        <div class="footer-names">
+                            <div class="name-item">
+                                <i class="fas fa-user-graduate me-2"></i>Luisa Enciso
+                            </div>
+                            <div class="name-item">
+                                <i class="fas fa-user-graduate me-2"></i>Santiago Rivera
+                            </div>
+                            <div class="name-item">
+                                <i class="fas fa-user-graduate me-2"></i>María Ostos
+                            </div>
+                        </div>
+                        <div class="footer-separator"></div>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="fas fa-calendar footer-icon"></i>
+                            <p class="footer-subtitle mb-0">2025 | Universidad de Antioquia</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script>
+        // Add animation classes to elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.probability-item, .result-card');
+            elements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+                element.classList.add('fade-in-up');
+            });
+
+            // Create floating particles
+            createParticles();
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Create floating particles effect
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random position
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                // Random animation delay
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Add hover effect to form controls
+        document.querySelectorAll('.form-control').forEach(control => {
+            control.addEventListener('focus', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            
+            control.addEventListener('blur', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        // Prediction button animation
+        const predictBtn = document.getElementById('predictBtn');
+        const predictionAnimation = document.getElementById('predictionAnimation');
+        
+        if (predictBtn) {
+            predictBtn.addEventListener('click', function() {
+                // Add loading state to button
+                this.classList.add('loading');
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Procesando...';
+                
+                // Show prediction animation
+                predictionAnimation.classList.add('show');
+                
+                // Simulate processing time (remove this in production)
+                setTimeout(() => {
+                    // Hide animation and reset button
+                    predictionAnimation.classList.remove('show');
+                    this.classList.remove('loading');
+                    this.innerHTML = '<i class="fas fa-magic me-2"></i>Predecir GRD';
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>
